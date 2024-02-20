@@ -23,34 +23,40 @@ carbon_content = df["Carbon dioxide(ppm)"]
 sample_size = 100
 num_chunks = math.ceil(len(times)/sample_size)
 
+# Lists for data
 time_subsets = []
 carbon_content_subsets = []
 interpolations = []
 
+# Interpolation for each sample
 for i in range(num_chunks):
+    # Get the subsets we're working with
     time_subset = times[i*sample_size:(i+1)*sample_size]
     carbon_content_subset = carbon_content[i*sample_size:(i+1)*sample_size]
+
+    # Perform interpolation, and add it to our interpolations list
     interpolations.append(CubicSpline(time_subset, carbon_content_subset))
 
+    # Add the subsets of data for easy indexing
     time_subsets.append(time_subset)
     carbon_content_subsets.append(carbon_content_subset)
 
 
-# Plot the Cubic Spline Interpolation of the first subset
-    
-test_index = 0
-time_subset = time_subsets[test_index]
-# Clean this subset so that it can be displayed nicely
+# Plot the Cubic Spline Interpolation of the [test_index]
+TEST_INDEX = 0 #EDIT THIS IF YOU WANT TO CHANGE THE SUBSET
 
-carbon_content_subset = carbon_content_subsets[test_index]
-interpolation = interpolations[test_index]
+time_subset = time_subsets[TEST_INDEX]
+carbon_content_subset = carbon_content_subsets[TEST_INDEX]
+interpolation = interpolations[TEST_INDEX]
 
 time_min = time_subset.min()
 time_max = time_subset.max()
 
+# X and Y values for the interpolation
 cubic_x = pd.date_range(time_min, time_max, 1000)
 cubic_y = interpolation(cubic_x)
 
+# Actual plot code
 plt.figure()
 plt.plot(cubic_x.to_pydatetime(), cubic_y, color="green", label="Interpolation")
 plt.scatter(time_subset, carbon_content_subset, color="Blue", label="Gathered data")
